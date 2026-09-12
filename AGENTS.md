@@ -38,6 +38,26 @@ The AI coding agent behaves as a **Senior Principal Software Engineer & Architec
    - Sales are atomic transactions (Sale + Items + Stock OUT + Payments + Wallet IN + Customer Due + Audit + Sync).
 4. **No Fake Core / No Placeholders**:
    - Never ship fake cameras, mock recordings, fake sync success, or unverified backups. Mocks belong only in tests.
+5. **MASTER SCHEMA — MANDATORY SINGLE SOURCE OF TRUTH**:
+   - `MASTER_SCHEMA.md` is the authoritative single source of truth for the complete database schema.
+   - Canonical file location: `docs/database/MASTER_SCHEMA.md` (with root mirror `MASTER_SCHEMA.md`). Both must maintain 100% byte-for-byte synchronization.
+   - `MASTER_SCHEMA.md` must NEVER be partial, outdated, or manually guessed. It must exhaustively document every table, column, data type, primary key, foreign key, index, constraint, and enum.
+   - **Mandatory 7-Step Schema Change Lifecycle**:
+     1. **Inspect**: Inspect current DB state, existing migrations, and `MASTER_SCHEMA.md`.
+     2. **Migrate**: Author the sequential, backward-compatible migration code (e.g. `schema_v{N}.dart` / SQL).
+     3. **Test**: Run migration tests against clean and populated SQLite instances; verify foreign keys and indexes.
+     4. **Update Docs**: Immediately update `MASTER_SCHEMA.md` with the COMPLETE updated database schema.
+     5. **Verify Parity**: Verify actual DB tables, columns, indexes, and constraints exactly match `MASTER_SCHEMA.md`.
+     6. **Bump Version**: Increment `PRAGMA user_version` to match the migration step.
+     7. **Gate**: Do not mark the task/phase complete until migration and schema parity tests pass with 100% green status.
+   - **Schema Invariants & Forbidden Patterns**:
+     - **ZERO Branches**: Strictly forbidden to add `branch_id`, `branch_code`, `branches`, or branch references to any table.
+     - **Immutable Ledgers**: `inventory_movements` and `wallet_transactions` are insert-only append ledgers. Never update or delete ledger entries.
+     - **Engine Standards**: SQLite WAL mode (`PRAGMA journal_mode = WAL;`) and Foreign Key enforcement (`PRAGMA foreign_keys = ON;`) are non-negotiable.
+     - **Data Types**: All timestamps must be ISO-8601 UTC strings (`TEXT`). Monetary amounts must use integer smallest currency units (cents/paisa) or high-precision deterministic representations, never floating point.
+     - **Data Preservation**: Existing user data MUST be preserved during migrations; destructive migrations require explicit user authorization.
+     - **Reproducibility**: A fresh clone/installation MUST be able to execute migrations from version 1 to N and recreate the exact active database schema.
+   - **Stop Condition**: If `MASTER_SCHEMA.md` and the actual database differ by even a single column, constraint, or index, STOP treating the task/phase as complete and reconcile them immediately.
 
 ---
 
@@ -59,7 +79,7 @@ Every rule from #1 to #200 is divided into dedicated, small, readable files:
 | 10 | [**10-device-trust-lifecycle.md**](docs/agents/10-device-trust-lifecycle.md) | Device trust lifecycle: PENDING, TRUSTED, REVOKED, BLOCKED (Rules 66–68) |
 | 11 | [**11-permissions-rbac.md**](docs/agents/11-permissions-rbac.md) | Deny-by-default permission resolver, roles (Owner, Admin, Manager, Cashier, Salesman) (Rules 69–78) |
 | 12 | [**12-audit-and-secrets.md**](docs/agents/12-audit-and-secrets.md) | Structured audit logging & absolute prohibition on logging secrets (Rules 79–80) |
-| 13 | [**13-database-and-migrations.md**](docs/agents/13-database-and-migrations.md) | Repositories, atomic DB transactions, schema migrations, MASTER_SCHEMA (Rules 81–85) |
+| 13 | [**13-database-and-migrations.md**](docs/agents/13-database-and-migrations.md) | Repositories, atomic DB transactions, schema migrations, MASTER_SCHEMA (Rules 81–86) |
 | 14 | [**14-backup-and-restore.md**](docs/agents/14-backup-and-restore.md) | .zynb backup archive, safe restore protocol, projection rebuilds (Rules 86–91) |
 | 15 | [**15-reports-and-printing.md**](docs/agents/15-reports-and-printing.md) | Authoritative reports, streaming exports, thermal ESC/POS printing, barcode standards (Rules 92–96) |
 | 16 | [**16-settings-and-storage.md**](docs/agents/16-settings-and-storage.md) | Settings hierarchy & FileStorageService filesystem abstraction (Rules 97–98) |

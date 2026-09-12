@@ -5,10 +5,13 @@ library app_database;
 import 'package:sqlite3/sqlite3.dart';
 import 'database_connection.dart';
 import 'schema/schema_v1.dart';
+import 'schema/schema_v2.dart';
 
 class AppDatabase {
   final DatabaseConnection connection;
   bool _initialized = false;
+
+  static const int currentSchemaVersion = SchemaV2.version;
 
   AppDatabase(this.connection);
 
@@ -29,9 +32,9 @@ class AppDatabase {
     final currentVersion = getSchemaVersion();
 
     if (currentVersion == 0) {
-      _applySchemaV1();
-    } else if (currentVersion < SchemaV1.version) {
-      _migrate(currentVersion, SchemaV1.version);
+      _applyInitialSchema();
+    } else if (currentVersion < currentSchemaVersion) {
+      _migrate(currentVersion, currentSchemaVersion);
     }
 
     _initialized = true;
@@ -43,18 +46,27 @@ class AppDatabase {
     return result.first.values[0] as int? ?? 0;
   }
 
-  void _applySchemaV1() {
+  void _applyInitialSchema() {
     transaction(() {
       for (final sql in SchemaV1.ddlStatements) {
         connection.execute(sql);
       }
-      connection.execute('PRAGMA user_version = ${SchemaV1.version};');
+      for (final sql in SchemaV2.migrationStatements) {
+        connection.execute(sql);
+      }
+      connection.execute('PRAGMA user_version = $currentSchemaVersion;');
     });
   }
 
   void _migrate(int fromVersion, int toVersion) {
-    // Incremental migrations will be added in future versions
-    // For now, version 1 is baseline
+    transaction(() {
+      if (fromVersion < 2 && toVersion >= 2) {
+        for (final sql in SchemaV2.migrationStatements) {
+          connection.execute(sql);
+        }
+        connection.execute('PRAGMA user_version = 2;');
+      }
+    });
   }
 
   int _transactionDepth = 0;

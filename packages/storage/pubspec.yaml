@@ -1,0 +1,16 @@
+name: storage
+description: Filesystem storage service, strict directory taxonomy, chunked streaming IO, and SHA-256 deduplication for Zaynahs Ecosystem.
+version: 1.0.0
+publish_to: 'none'
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  meta: ^1.11.0
+  crypto: ^3.0.3
+  core:
+    path: ../core
+
+dev_dependencies:
+  test: ^1.24.0

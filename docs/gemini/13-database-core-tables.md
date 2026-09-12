@@ -93,19 +93,28 @@ Default rule:
 
 ---
 
-# 80. MASTER SCHEMA RULE
+# 80. MASTER SCHEMA — MANDATORY SINGLE SOURCE OF TRUTH
 
-Every migration:
+`MASTER_SCHEMA.md` is the single source of truth for the complete database schema.
 
-    create migration
-    ↓
-    run migration
-    ↓
-    test
-    ↓
-    update MASTER_SCHEMA
-    ↓
-    verify actual DB
+EVERY database/schema change MUST follow:
+
+    1. Inspect current DB + migrations + MASTER_SCHEMA.md.
+    2. Create/run the migration.
+    3. Test the migration and affected features.
+    4. Immediately update MASTER_SCHEMA.md with the COMPLETE current schema.
+    5. Verify MASTER_SCHEMA.md exactly matches the actual database.
+    6. Update schema version.
+    7. Do not mark the task/phase complete until this verification passes.
+
+`MASTER_SCHEMA.md` must NEVER be partial, outdated, or manually guessed.
+
+For every new table/column/index/constraint/enum/relationship/migration:
+**Migration → Test → MASTER_SCHEMA update → Actual DB verification**.
+
+- Fresh clone/install MUST be able to recreate the complete database from migrations.
+- Existing user data MUST be preserved during migrations unless an explicitly approved destructive migration is required.
+- If `MASTER_SCHEMA.md` and the actual DB differ, STOP treating the phase as complete and reconcile them first.
 
 ---
 

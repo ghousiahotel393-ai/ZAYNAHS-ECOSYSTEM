@@ -1,5 +1,5 @@
 # ZAYNAHS ECOSYSTEM — MASTER DATABASE SCHEMA
-# Canonical Schema Definition & Data Dictionary (Version 1.0)
+# Canonical Schema Definition & Data Dictionary (Version 2.0)
 
 > **Architectural Law & Invariants**  
 > 1. **ONE Ecosystem — ZERO Branches**: strictly NO `branch_id`, `branches`, or `branch_manager`.  
@@ -269,6 +269,30 @@ CREATE INDEX idx_audit_logs_actor_id ON audit_logs(actor_id);
 
 ---
 
-## 8. MASTER SCHEMA VERSION TRACKING
-- Current Schema Version: `1` (`PRAGMA user_version = 1;`).
-- All migrations must increment `user_version` and preserve complete ledger integrity.
+## 8. STORAGE & CONTENT DEDUPLICATION
+
+### 8.1 `storage_files`
+Content-addressable storage catalog for deduplicated files, product images, and media attachments.
+```sql
+CREATE TABLE storage_files (
+    id TEXT PRIMARY KEY,                       -- e.g. 'fil_...'
+    category TEXT NOT NULL,                    -- 'media_products', 'cctv_recordings', etc.
+    file_name TEXT NOT NULL,                   -- Original filename
+    file_path TEXT NOT NULL,                   -- Relative path on local disk
+    sha256_hash TEXT NOT NULL,                 -- Hex-encoded SHA-256 digest
+    file_size_bytes INTEGER NOT NULL,          -- Size in bytes
+    mime_type TEXT NOT NULL DEFAULT 'application/octet-stream',
+    reference_count INTEGER NOT NULL DEFAULT 1,-- Incremented when shared; decremented on delete
+    created_at TEXT NOT NULL                   -- ISO8601 UTC
+);
+CREATE INDEX idx_storage_files_sha256 ON storage_files(sha256_hash);
+CREATE INDEX idx_storage_files_category ON storage_files(category);
+```
+
+---
+
+## 9. MASTER SCHEMA VERSION TRACKING
+- Current Schema Version: `2` (`PRAGMA user_version = 2;`).
+- Migrations History:
+  - `v1`: Core ecosystem, devices, users, inventory, wallets, customers, sales, sync, audit.
+  - `v2`: Storage content deduplication catalog (`storage_files`).

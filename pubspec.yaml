@@ -15,6 +15,8 @@ dependencies:
     path: packages/database
   auth:
     path: packages/auth
+  storage:
+    path: packages/storage
   sqlite3: ^2.9.4
   crypto: ^3.0.3
 
