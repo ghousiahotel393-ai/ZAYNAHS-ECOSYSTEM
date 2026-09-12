@@ -1,0 +1,15 @@
+name: ui
+description: Shared UI design system, themes, responsive layout, and widgets for Zaynahs Ecosystem.
+version: 1.0.0
+publish_to: 'none'
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  meta: ^1.11.0
+  core:
+    path: ../core
+
+dev_dependencies:
+  test: ^1.24.0

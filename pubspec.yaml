@@ -1,0 +1,16 @@
+name: zaynahs_ecosystem
+description: Production-grade Zaynahs Ecosystem — Local-First Peer-to-Peer POS & Collaboration.
+version: 1.0.0
+publish_to: 'none'
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  core:
+    path: packages/core
+  ui:
+    path: packages/ui
+
+dev_dependencies:
+  test: ^1.24.0
