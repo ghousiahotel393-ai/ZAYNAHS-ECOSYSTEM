@@ -1,0 +1,16 @@
+name: database
+description: Local-first SQLite database engine, core schemas, immutable ledgers, atomic transactions, and repositories for Zaynahs Ecosystem.
+version: 1.0.0
+publish_to: 'none'
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  meta: ^1.11.0
+  sqlite3: ^2.9.4
+  core:
+    path: ../core
+
+dev_dependencies:
+  test: ^1.24.0
