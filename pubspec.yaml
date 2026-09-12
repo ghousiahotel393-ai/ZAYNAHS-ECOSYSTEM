@@ -13,7 +13,10 @@ dependencies:
     path: packages/ui
   database:
     path: packages/database
+  auth:
+    path: packages/auth
   sqlite3: ^2.9.4
+  crypto: ^3.0.3
 
 dev_dependencies:
   test: ^1.24.0
