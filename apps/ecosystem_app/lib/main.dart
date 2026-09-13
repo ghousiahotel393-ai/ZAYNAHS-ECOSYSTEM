@@ -135,7 +135,7 @@ class _EcosystemHomeShellState extends State<EcosystemHomeShell> {
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
-    final screenType = ResponsiveLayoutHelper.resolveScreenType(width);
+    final screenType = ResponsiveLayoutHelper.getScreenType(width);
 
     final screens = [
       PosScreen(
@@ -187,18 +187,18 @@ class _EcosystemHomeShellState extends State<EcosystemHomeShell> {
             selectedIconTheme: const IconThemeData(color: Color(AppColors.primaryLightValue)),
             unselectedIconTheme: const IconThemeData(color: Color(AppColors.darkTextMuted)),
             labelType: screenType == ScreenType.desktop ? NavigationRailLabelType.all : NavigationRailLabelType.none,
-            leading: Padding(
-              padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
+            leading: const Padding(
+              padding: EdgeInsets.symmetric(vertical: AppSpacing.md),
               child: CircleAvatar(
-                backgroundColor: const Color(AppColors.primaryValue),
-                child: const Text('Z', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
+                backgroundColor: Color(AppColors.primaryValue),
+                child: Text('Z', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
               ),
             ),
             destinations: const [
               NavigationRailDestination(icon: Icon(Icons.point_of_sale), label: Text('POS')),
               NavigationRailDestination(icon: Icon(Icons.inventory_2), label: Text('Inventory')),
               NavigationRailDestination(icon: Icon(Icons.account_balance_wallet), label: Text('Wallets')),
-              NavigationRailDestination(icon: Icon(Icons.bar_chart), label: 'P&L'),
+              NavigationRailDestination(icon: Icon(Icons.bar_chart), label: Text('P&L')),
               NavigationRailDestination(icon: Icon(Icons.videocam), label: Text('CCTV')),
               NavigationRailDestination(icon: Icon(Icons.backup), label: Text('Backup')),
             ],

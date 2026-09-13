@@ -32,7 +32,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
       itemId: itemId,
       type: 'PURCHASE',
       quantity: qty,
-      costPrice: Money.fromMinorUnits(50000, Currency.pkr),
+      costPrice: const Money.fromMinorUnits(50000, Currency.pkr),
       referenceId: 'PO-RESTOCK-${DateTime.now().millisecondsSinceEpoch}',
       actorId: 'usr_admin_01',
       deviceId: 'dev_local_pos',

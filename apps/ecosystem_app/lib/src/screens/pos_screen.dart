@@ -67,7 +67,7 @@ class _PosScreenState extends State<PosScreen> {
 
   void _checkout() {
     if (_cart.isEmpty) return;
-    final curr = Currency.pkr;
+    const curr = Currency.pkr;
     final lineItems = <CartLineItem>[];
     var totalMinor = 0;
 
@@ -130,7 +130,7 @@ class _PosScreenState extends State<PosScreen> {
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
-    final cols = ResponsiveLayoutHelper.calculatePosGridColumns(width);
+    final cols = ResponsiveLayoutHelper.getGridColumnCount(width);
 
     return Row(
       children: [

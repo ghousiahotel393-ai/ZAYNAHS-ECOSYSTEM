@@ -10,7 +10,7 @@ void seedBaselineData(
   CameraDiscoveryService cctvDiscovery,
 ) {
   final now = DateTime.now().toUtc();
-  final curr = Currency.pkr;
+  const curr = Currency.pkr;
 
   // 1. Ecosystem
   db.connection.execute(
@@ -44,7 +44,7 @@ void seedBaselineData(
   // 4. Wallets: Cash, Bank, Online
   final existingWallets = walletRepo.listActiveWallets();
   if (existingWallets.isEmpty) {
-    final cashInit = Money.fromMinorUnits(5000000, curr);
+    const cashInit = Money.fromMinorUnits(5000000, curr);
     walletRepo.createWallet(WalletEntity(
       id: 'wal_cash',
       name: 'Main Cash Drawer',
@@ -64,7 +64,7 @@ void seedBaselineData(
       notes: 'Initial cash drawer float',
     );
 
-    final bankInit = Money.fromMinorUnits(20000000, curr);
+    const bankInit = Money.fromMinorUnits(20000000, curr);
     walletRepo.createWallet(WalletEntity(
       id: 'wal_bank',
       name: 'HBL Business Account',
@@ -84,7 +84,7 @@ void seedBaselineData(
       notes: 'Opening bank account balance',
     );
 
-    final onlineInit = Money.fromMinorUnits(3500000, curr);
+    const onlineInit = Money.fromMinorUnits(3500000, curr);
     walletRepo.createWallet(WalletEntity(
       id: 'wal_online',
       name: 'Easypaisa / Raast Online',

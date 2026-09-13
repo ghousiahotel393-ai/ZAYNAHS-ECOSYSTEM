@@ -97,7 +97,18 @@ class _WalletsScreenState extends State<WalletsScreen> {
                         'Rs ${(bal.minorUnits / 100).toStringAsFixed(2)}',
                         style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(AppColors.success)),
                       ),
-                      Text('Account: ${w.id}', style: const TextStyle(fontSize: 11, color: Color(AppColors.darkTextMuted))),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text('Account: ${w.id}', style: const TextStyle(fontSize: 11, color: Color(AppColors.darkTextMuted))),
+                          if (w.id != 'w_bank_01')
+                            TextButton.icon(
+                              icon: const Icon(Icons.sync_alt, size: 14),
+                              label: const Text('Float +Rs 1k', style: TextStyle(fontSize: 11)),
+                              onPressed: () => _transfer('w_bank_01', w.id, 100000),
+                            ),
+                        ],
+                      ),
                     ],
                   ),
                 );
