@@ -52,27 +52,22 @@ void main(List<String> args) async {
   final server = await HttpServer.bind(host, port);
 
   // ignore: avoid_print
-  print('================================================================');
+  print('\n   ▲ ZAYNAHS ECOSYSTEM 1.0.0 (Local Dev Server)');
   // ignore: avoid_print
-  print('  🚀 ZAYNAHS ECOSYSTEM — LOCAL APPLICATION RUNNER IS ACTIVE');
+  print('   - Local:        http://localhost:$port/');
   // ignore: avoid_print
-  print('================================================================');
+  print('   - Network:      http://$host:$port/');
   // ignore: avoid_print
-  print('  Database File : $dbPath (SQLite WAL Mode, Schema v8)');
+  print('   - Database:     $dbPath (SQLite WAL, Schema v8)');
   // ignore: avoid_print
-  print('  Architecture  : STRICTLY ONE ECOSYSTEM — ZERO BRANCHES');
+  print('   - Architecture: Strictly ONE ECOSYSTEM — ZERO BRANCHES');
   // ignore: avoid_print
-  print('  Web Dashboard : http://$host:$port/');
+  print('\n   ✓ Server ready. Open http://localhost:$port/ in your browser.');
   // ignore: avoid_print
-  print('  REST API      : http://$host:$port/api/status');
-  // ignore: avoid_print
-  print('================================================================');
-  // ignore: avoid_print
-  print('  Open http://$host:$port/ in your browser to test.');
-  // ignore: avoid_print
-  print('  Press Ctrl+C to stop the local server.\n');
+  print('   ✓ Press Ctrl+C to stop.\n');
 
   await for (HttpRequest req in server) {
+    final sw = Stopwatch()..start();
     try {
       final path = req.uri.path;
       final method = req.method;
@@ -92,6 +87,8 @@ void main(List<String> args) async {
         req.response.headers.contentType = ContentType.html;
         req.response.write(renderHtmlDashboard());
         await req.response.close();
+        // ignore: avoid_print
+        print('   GET $path 200 in ${sw.elapsedMilliseconds}ms');
         continue;
       }
 
@@ -108,6 +105,8 @@ void main(List<String> args) async {
           'pending_sync_events': syncQueue.getPendingCount(),
           'timestamp': DateTime.now().toUtc().toIso8601String(),
         });
+        // ignore: avoid_print
+        print('   GET $path 200 in ${sw.elapsedMilliseconds}ms');
         continue;
       }
 

@@ -1,0 +1,23 @@
+{
+  "name": "zaynahs-ecosystem",
+  "version": "1.0.0",
+  "description": "Zaynahs Ecosystem — Local POS, Inventory Ledger, Wallets & Surveillance Console",
+  "scripts": {
+    "dev": "dart apps/ecosystem_app/bin/main.dart",
+    "start": "dart apps/ecosystem_app/bin/main.dart",
+    "test": "dart tests/run_all.dart",
+    "verify": "./scripts/verify_phase_15.sh",
+    "soak": "dart tests/unit/production_soak_test.dart"
+  },
+  "keywords": [
+    "pos",
+    "offline-first",
+    "p2p",
+    "sqlite-wal",
+    "immutable-ledger",
+    "cctv"
+  ],
+  "author": "Zaynahs Ecosystem Team",
+  "license": "UNLICENSED",
+  "private": true
+}
