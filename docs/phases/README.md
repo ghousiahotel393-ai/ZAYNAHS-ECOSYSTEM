@@ -17,7 +17,7 @@
 | **05** | [**PHASE-05-sync-events/**](PHASE-05-sync-events/) | 4 files | Event-driven sync, durable outbox, cursors, conflict preservation (NO LWW) — ✅ COMPLETED |
 | **06** | [**PHASE-06-p2p-webrtc/**](PHASE-06-p2p-webrtc/) | 4 files | LAN discovery (mDNS), Cloudflare signaling, WebRTC DataChannels, STUN/TURN fallback — ✅ COMPLETED |
 | **07** | [**PHASE-07-communication/**](PHASE-07-communication/) | 4 files | E2E chat, resumable file transfer (Golden Test 104), calls, screen sharing — ✅ COMPLETED |
-| **08** | [**PHASE-08-pos-core/**](PHASE-08-pos-core/) | 7 files | **ONE POS Engine**, immutable inventory ledger, multi-wallet accounts, Golden Test 100 |
+| **08** | [**PHASE-08-pos-core/**](PHASE-08-pos-core/) | 7 files | **ONE POS Engine**, immutable inventory ledger, multi-wallet accounts, Golden Test 100 — ✅ COMPLETED |
 | **09** | [**PHASE-09-pos-advanced/**](PHASE-09-pos-advanced/) | 5 files | Discounts, taxes, barcode/QR engine, ESC/POS & PDF printing, procurement, stock counts |
 | **10** | [**PHASE-10-reports/**](PHASE-10-reports/) | 4 files | Authoritative reporting engine, P&L, register shift closeouts, streaming exports |
 | **11** | [**PHASE-11-cctv/**](PHASE-11-cctv/) | 5 files | USB/IP/RTSP cameras, segmented recording (1-5m), timeline playback, Golden Test 105 |

@@ -244,6 +244,13 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.5.3"
+  pos:
+    dependency: "direct main"
+    description:
+      path: "packages/pos"
+      relative: true
+    source: path
+    version: "1.0.0"
   pub_semver:
     dependency: transitive
     description:

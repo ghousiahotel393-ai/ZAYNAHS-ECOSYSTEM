@@ -23,6 +23,8 @@ dependencies:
     path: packages/network
   collaboration:
     path: packages/collaboration
+  pos:
+    path: packages/pos
   sqlite3: ^2.9.4
   crypto: ^3.0.3
 

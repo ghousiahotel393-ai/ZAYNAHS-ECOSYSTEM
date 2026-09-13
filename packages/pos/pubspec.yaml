@@ -1,0 +1,18 @@
+name: pos
+description: Universal POS Engine for Zaynahs Ecosystem — ONE engine across all verticals.
+version: 1.0.0
+publish_to: 'none'
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  core:
+    path: ../core
+  database:
+    path: ../database
+  auth:
+    path: ../auth
+  sync:
+    path: ../sync
+  meta: ^1.9.1

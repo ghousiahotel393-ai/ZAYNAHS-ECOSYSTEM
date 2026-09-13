@@ -2,6 +2,7 @@
 /// Enforces Rule 23-26: Stock balance is strictly derived from the sum of movements.
 library inventory_repository;
 
+import 'dart:convert';
 import 'package:core/core.dart';
 import '../app_database.dart';
 
@@ -16,6 +17,7 @@ class InventoryItemEntity {
   final Money sellingPrice;
   final int minStockAlert;
   final bool isActive;
+  final Map<String, dynamic> attributes;
   final DateTime createdAt;
   final DateTime updatedAt;
 
@@ -30,6 +32,7 @@ class InventoryItemEntity {
     required this.sellingPrice,
     this.minStockAlert = 5,
     this.isActive = true,
+    this.attributes = const {},
     required this.createdAt,
     required this.updatedAt,
   });
@@ -77,8 +80,8 @@ class InventoryRepository {
       INSERT INTO inventory_items (
         id, sku, barcode, name, category, unit,
         cost_price_minor, selling_price_minor, min_stock_alert, is_active,
-        created_at, updated_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        attributes_json, created_at, updated_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ''',
       [
         item.id,
@@ -91,6 +94,7 @@ class InventoryRepository {
         item.sellingPrice.minorUnits,
         item.minStockAlert,
         item.isActive ? 1 : 0,
+        jsonEncode(item.attributes),
         item.createdAt.toIso8601String(),
         item.updatedAt.toIso8601String(),
       ],
@@ -178,6 +182,12 @@ class InventoryRepository {
     );
     if (rs.isEmpty) return null;
     final row = rs.first;
+    Map<String, dynamic> attrs = {};
+    if (row.containsKey('attributes_json') && row['attributes_json'] != null) {
+      try {
+        attrs = jsonDecode(row['attributes_json'] as String) as Map<String, dynamic>;
+      } catch (_) {}
+    }
     return InventoryItemEntity(
       id: row['id'] as String,
       sku: row['sku'] as String,
@@ -189,6 +199,7 @@ class InventoryRepository {
       sellingPrice: Money.fromMinorUnits(row['selling_price_minor'] as int, Currency.pkr),
       minStockAlert: row['min_stock_alert'] as int,
       isActive: (row['is_active'] as int) == 1,
+      attributes: attrs,
       createdAt: DateTime.parse(row['created_at'] as String),
       updatedAt: DateTime.parse(row['updated_at'] as String),
     );
@@ -199,19 +210,28 @@ class InventoryRepository {
     final rs = db.connection.select(
       'SELECT * FROM inventory_items WHERE is_active = 1 ORDER BY name ASC',
     );
-    return rs.map((row) => InventoryItemEntity(
-      id: row['id'] as String,
-      sku: row['sku'] as String,
-      barcode: row['barcode'] as String?,
-      name: row['name'] as String,
-      category: row['category'] as String,
-      unit: row['unit'] as String,
-      costPrice: Money.fromMinorUnits(row['cost_price_minor'] as int, Currency.pkr),
-      sellingPrice: Money.fromMinorUnits(row['selling_price_minor'] as int, Currency.pkr),
-      minStockAlert: row['min_stock_alert'] as int,
-      isActive: (row['is_active'] as int) == 1,
-      createdAt: DateTime.parse(row['created_at'] as String),
-      updatedAt: DateTime.parse(row['updated_at'] as String),
-    )).toList();
+    return rs.map((row) {
+      Map<String, dynamic> attrs = {};
+      if (row.containsKey('attributes_json') && row['attributes_json'] != null) {
+        try {
+          attrs = jsonDecode(row['attributes_json'] as String) as Map<String, dynamic>;
+        } catch (_) {}
+      }
+      return InventoryItemEntity(
+        id: row['id'] as String,
+        sku: row['sku'] as String,
+        barcode: row['barcode'] as String?,
+        name: row['name'] as String,
+        category: row['category'] as String,
+        unit: row['unit'] as String,
+        costPrice: Money.fromMinorUnits(row['cost_price_minor'] as int, Currency.pkr),
+        sellingPrice: Money.fromMinorUnits(row['selling_price_minor'] as int, Currency.pkr),
+        minStockAlert: row['min_stock_alert'] as int,
+        isActive: (row['is_active'] as int) == 1,
+        attributes: attrs,
+        createdAt: DateTime.parse(row['created_at'] as String),
+        updatedAt: DateTime.parse(row['updated_at'] as String),
+      );
+    }).toList();
   }
 }

@@ -75,6 +75,7 @@ CREATE TABLE inventory_items (
     selling_price_minor INTEGER NOT NULL DEFAULT 0 CHECK(selling_price_minor >= 0),
     min_stock_alert INTEGER NOT NULL DEFAULT 5 CHECK(min_stock_alert >= 0),
     is_active INTEGER NOT NULL DEFAULT 1 CHECK(is_active IN (0, 1)),
+    attributes_json TEXT NOT NULL DEFAULT '{}', -- Domain template attributes (clothing, electronics, etc.)
     created_at TEXT NOT NULL,
     updated_at TEXT NOT NULL
 );
@@ -203,10 +204,70 @@ CREATE TABLE sale_items (
     quantity INTEGER NOT NULL CHECK(quantity > 0),
     unit_price_minor INTEGER NOT NULL CHECK(unit_price_minor >= 0),
     cost_price_snapshot_minor INTEGER NOT NULL CHECK(cost_price_snapshot_minor >= 0),
-    total_price_minor INTEGER NOT NULL CHECK(total_price_minor >= 0)
+    total_price_minor INTEGER NOT NULL CHECK(total_price_minor >= 0),
+    attributes_json TEXT NOT NULL DEFAULT '{}' -- Snapshotted item variant/custom attributes
 );
 CREATE INDEX idx_sale_items_sale_id ON sale_items(sale_id);
 CREATE INDEX idx_sale_items_item_id ON sale_items(item_id);
+```
+
+### 5.3 `sale_payments`
+Multi-wallet split payment allocations for completed sales.
+```sql
+CREATE TABLE sale_payments (
+    id TEXT PRIMARY KEY,                       -- e.g. 'spm_...'
+    sale_id TEXT NOT NULL REFERENCES sales(id) ON DELETE CASCADE,
+    wallet_id TEXT NOT NULL REFERENCES wallets(id),
+    amount_minor INTEGER NOT NULL CHECK(amount_minor > 0),
+    created_at TEXT NOT NULL                   -- ISO8601 UTC
+);
+CREATE INDEX idx_sale_payments_sale_id ON sale_payments(sale_id);
+CREATE INDEX idx_sale_payments_wallet_id ON sale_payments(wallet_id);
+```
+
+### 5.4 `returns`
+Authoritative sales return master records.
+```sql
+CREATE TABLE returns (
+    id TEXT PRIMARY KEY,                       -- e.g. 'ret_...'
+    return_number TEXT UNIQUE NOT NULL,        -- e.g. 'RET-20260912-001'
+    sale_id TEXT NOT NULL REFERENCES sales(id),
+    total_refund_minor INTEGER NOT NULL CHECK(total_refund_minor >= 0),
+    reason TEXT,
+    actor_id TEXT NOT NULL REFERENCES users(id),
+    device_id TEXT NOT NULL REFERENCES devices(id),
+    created_at TEXT NOT NULL                   -- ISO8601 UTC
+);
+CREATE INDEX idx_returns_sale_id ON returns(sale_id);
+CREATE INDEX idx_returns_return_number ON returns(return_number);
+```
+
+### 5.5 `return_items`
+Individual line items returned with restored stock and refund allocation.
+```sql
+CREATE TABLE return_items (
+    id TEXT PRIMARY KEY,                       -- e.g. 'rti_...'
+    return_id TEXT NOT NULL REFERENCES returns(id) ON DELETE CASCADE,
+    item_id TEXT NOT NULL REFERENCES inventory_items(id),
+    quantity INTEGER NOT NULL CHECK(quantity > 0),
+    refund_amount_minor INTEGER NOT NULL CHECK(refund_amount_minor >= 0)
+);
+CREATE INDEX idx_return_items_return_id ON return_items(return_id);
+CREATE INDEX idx_return_items_item_id ON return_items(item_id);
+```
+
+### 5.6 `return_payments`
+Refund allocations disbursed across wallets (Cash, Bank, Online).
+```sql
+CREATE TABLE return_payments (
+    id TEXT PRIMARY KEY,                       -- e.g. 'rpm_...'
+    return_id TEXT NOT NULL REFERENCES returns(id) ON DELETE CASCADE,
+    wallet_id TEXT NOT NULL REFERENCES wallets(id),
+    amount_minor INTEGER NOT NULL CHECK(amount_minor > 0),
+    created_at TEXT NOT NULL                   -- ISO8601 UTC
+);
+CREATE INDEX idx_return_payments_return_id ON return_payments(return_id);
+CREATE INDEX idx_return_payments_wallet_id ON return_payments(wallet_id);
 ```
 
 ---
@@ -315,7 +376,9 @@ CREATE INDEX idx_storage_files_category ON storage_files(category);
 ---
 
 ## 9. MASTER SCHEMA VERSION TRACKING
-- Current Schema Version: `2` (`PRAGMA user_version = 2;`).
+- Current Schema Version: `4` (`PRAGMA user_version = 4;`).
 - Migrations History:
   - `v1`: Core ecosystem, devices, users, inventory, wallets, customers, sales, sync, audit.
   - `v2`: Storage content deduplication catalog (`storage_files`).
+  - `v3`: Event sync metadata columns on `sync_outbox`, `sync_conflicts` table, and dispatch indexes.
+  - `v4`: Domain template attributes (`attributes_json`), split payment allocations (`sale_payments`), and returns engine (`returns`, `return_items`, `return_payments`).
