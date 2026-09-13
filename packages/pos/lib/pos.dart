@@ -12,3 +12,6 @@ export 'src/barcode_engine.dart';
 export 'src/thermal_printer.dart';
 export 'src/procurement_service.dart';
 export 'src/stock_count_service.dart';
+export 'src/reporting_engine.dart';
+export 'src/shift_manager.dart';
+export 'src/streaming_exporter.dart';

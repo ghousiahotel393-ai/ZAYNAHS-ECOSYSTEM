@@ -455,11 +455,39 @@ CREATE INDEX idx_storage_files_category ON storage_files(category);
 
 ---
 
-## 9. MASTER SCHEMA VERSION TRACKING
-- Current Schema Version: `5` (`PRAGMA user_version = 5;`).
+## 9. CASH REGISTER SHIFTS & RECONCILIATION
+
+### 9.1 `register_shifts`
+Cash register shift tracking, expected cash derivation, and day-end Z-reports.
+```sql
+CREATE TABLE register_shifts (
+    id TEXT PRIMARY KEY,                       -- e.g. 'shf_...'
+    shift_number TEXT UNIQUE NOT NULL,         -- e.g. 'SHF-20260912-001'
+    cashier_id TEXT NOT NULL REFERENCES users(id),
+    device_id TEXT NOT NULL REFERENCES devices(id),
+    opening_float_minor INTEGER NOT NULL CHECK(opening_float_minor >= 0),
+    expected_cash_minor INTEGER NOT NULL DEFAULT 0,
+    counted_cash_minor INTEGER,
+    cash_variance_minor INTEGER NOT NULL DEFAULT 0,
+    total_sales_minor INTEGER NOT NULL DEFAULT 0,
+    status TEXT NOT NULL CHECK(status IN ('OPEN', 'CLOSED')),
+    opened_at TEXT NOT NULL,                   -- ISO8601 UTC
+    closed_at TEXT,
+    notes TEXT
+);
+CREATE INDEX idx_register_shifts_shift_number ON register_shifts(shift_number);
+CREATE INDEX idx_register_shifts_cashier_id ON register_shifts(cashier_id);
+CREATE INDEX idx_register_shifts_status ON register_shifts(status);
+```
+
+---
+
+## 10. MASTER SCHEMA VERSION TRACKING
+- Current Schema Version: `6` (`PRAGMA user_version = 6;`).
 - Migrations History:
   - `v1`: Core ecosystem, devices, users, inventory, wallets, customers, sales, sync, audit.
   - `v2`: Storage content deduplication catalog (`storage_files`).
   - `v3`: Event sync metadata columns on `sync_outbox`, `sync_conflicts` table, and dispatch indexes.
   - `v4`: Domain template attributes (`attributes_json`), split payment allocations (`sale_payments`), and returns engine (`returns`, `return_items`, `return_payments`).
   - `v5`: Suppliers directory, purchase orders, purchase order items, and physical stock count audit sessions (`stock_counts`, `stock_count_items`).
+  - `v6`: Cash register shift closeouts and Z-reports (`register_shifts`).
