@@ -8,3 +8,5 @@ export 'src/rbac_resolver.dart';
 export 'src/user_session.dart';
 export 'src/device_trust_manager.dart';
 export 'src/pairing_service.dart';
+export 'src/security_gatekeeper.dart';
+export 'src/secret_scanner.dart';

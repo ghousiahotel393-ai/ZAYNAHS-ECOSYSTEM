@@ -63,6 +63,30 @@ class AppRoute {
     requiredPermission: 'settings:manage',
   );
 
+  static const AppRoute backupRestore = AppRoute(
+    path: '/settings/restore',
+    title: 'Database Restore',
+    requiredPermission: 'backup:restore',
+  );
+
+  static const AppRoute cctvDelete = AppRoute(
+    path: '/cctv/delete',
+    title: 'Delete CCTV Footage',
+    requiredPermission: 'cctv:delete',
+  );
+
+  static const AppRoute walletsTransfer = AppRoute(
+    path: '/wallets/transfer',
+    title: 'Wallet Transfer',
+    requiredPermission: 'wallets:transfer',
+  );
+
+  static const AppRoute inventoryAdjust = AppRoute(
+    path: '/inventory/adjust',
+    title: 'Inventory Adjustment',
+    requiredPermission: 'inventory:adjust',
+  );
+
   static const AppRoute login = AppRoute(
     path: '/login',
     title: 'Sign In',
@@ -90,6 +114,10 @@ class AppRoute {
     reports,
     cctv,
     settings,
+    backupRestore,
+    cctvDelete,
+    walletsTransfer,
+    inventoryAdjust,
     login,
     accessDenied,
     notFound,

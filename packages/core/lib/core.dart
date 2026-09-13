@@ -10,6 +10,7 @@ export 'src/money.dart';
 export 'src/config.dart';
 export 'src/logger.dart';
 export 'src/di.dart';
+export 'src/resource_tracker.dart';
 
 // Platform Adapters
 export 'src/adapters/camera_adapter.dart';

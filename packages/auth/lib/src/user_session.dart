@@ -67,6 +67,9 @@ class UserSession {
     return now.difference(lastActivityAt) <= timeoutDuration;
   }
 
+  /// Returns true if the session has expired or been marked inactive.
+  bool get isExpired => !isValid;
+
   /// Checks if this active user has a specific permission.
   bool hasPermission(String requiredPermission) {
     if (!isValid) return false;

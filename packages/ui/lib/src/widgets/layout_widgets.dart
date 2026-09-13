@@ -3,7 +3,6 @@
 library layout_widgets;
 
 import '../theme/tokens.dart';
-import '../theme/app_theme.dart';
 
 /// Navigation item definition for AppScaffold.
 class NavItem {

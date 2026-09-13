@@ -38,6 +38,12 @@ class AuthException extends AppException {
         code: 'AUTH_DEVICE_REVOKED',
         message: 'This device has been revoked and cannot access the ecosystem.',
       );
+
+  factory AuthException.deviceUntrusted([String? status]) => AuthException(
+        code: 'AUTH_DEVICE_UNTRUSTED',
+        message: 'This device is not trusted (status: ${status ?? "UNTRUSTED"}). Access denied.',
+        details: {'status': status},
+      );
 }
 
 /// Permission & RBAC Errors
