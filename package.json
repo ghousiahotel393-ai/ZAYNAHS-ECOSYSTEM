@@ -1,18 +1,19 @@
 {
   "name": "zaynahs-ecosystem",
   "version": "1.0.0",
-  "description": "Zaynahs Ecosystem — Local POS, Inventory Ledger, Wallets & Surveillance Console",
+  "description": "Zaynahs Ecosystem — Production POS, Immutable Inventory Ledgers & Surveillance",
   "scripts": {
-    "dev": "dart apps/ecosystem_app/bin/main.dart",
-    "flutter:web": "cd apps/ecosystem_app && flutter run -d chrome",
-    "flutter:macos": "cd apps/ecosystem_app && flutter run -d macos",
-    "start": "dart apps/ecosystem_app/bin/main.dart",
+    "start": "cd apps/ecosystem_app && flutter run -d macos",
+    "app:macos": "cd apps/ecosystem_app && flutter run -d macos",
+    "app:web": "cd apps/ecosystem_app && flutter run -d chrome",
+    "app:build:macos": "cd apps/ecosystem_app && flutter build macos",
+    "app:build:web": "cd apps/ecosystem_app && flutter build web",
     "test": "dart tests/run_all.dart",
-    "verify": "./scripts/verify_phase_15.sh",
-    "soak": "dart tests/unit/production_soak_test.dart"
+    "verify": "./scripts/verify_phase_15.sh"
   },
   "keywords": [
     "pos",
+    "flutter",
     "offline-first",
     "p2p",
     "sqlite-wal",
