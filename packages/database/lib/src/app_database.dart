@@ -8,12 +8,13 @@ import 'schema/schema_v1.dart';
 import 'schema/schema_v2.dart';
 import 'schema/schema_v3.dart';
 import 'schema/schema_v4.dart';
+import 'schema/schema_v5.dart';
 
 class AppDatabase {
   final DatabaseConnection connection;
   bool _initialized = false;
 
-  static const int currentSchemaVersion = SchemaV4.version;
+  static const int currentSchemaVersion = SchemaV5.version;
 
   AppDatabase(this.connection);
 
@@ -62,6 +63,9 @@ class AppDatabase {
       for (final sql in SchemaV4.ddlStatements) {
         connection.execute(sql);
       }
+      for (final sql in SchemaV5.ddlStatements) {
+        connection.execute(sql);
+      }
       connection.execute('PRAGMA user_version = $currentSchemaVersion;');
     });
   }
@@ -85,6 +89,12 @@ class AppDatabase {
           connection.execute(sql);
         }
         connection.execute('PRAGMA user_version = 4;');
+      }
+      if (fromVersion < 5 && toVersion >= 5) {
+        for (final sql in SchemaV5.ddlStatements) {
+          connection.execute(sql);
+        }
+        connection.execute('PRAGMA user_version = 5;');
       }
     });
   }

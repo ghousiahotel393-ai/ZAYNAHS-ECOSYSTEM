@@ -105,6 +105,38 @@ CREATE INDEX idx_inv_movements_reference_id ON inventory_movements(reference_id)
 CREATE INDEX idx_inv_movements_created_at ON inventory_movements(created_at);
 ```
 
+### 2.3 `stock_counts` (PHYSICAL AUDITS)
+Physical inventory stock-take audit sessions (Rule 51).
+```sql
+CREATE TABLE stock_counts (
+    id TEXT PRIMARY KEY,                       -- e.g. 'stk_...'
+    count_number TEXT UNIQUE NOT NULL,         -- e.g. 'STK-20260912-001'
+    status TEXT NOT NULL CHECK(status IN ('IN_PROGRESS', 'COMPLETED', 'CANCELLED')),
+    notes TEXT,
+    actor_id TEXT NOT NULL REFERENCES users(id),
+    device_id TEXT NOT NULL REFERENCES devices(id),
+    created_at TEXT NOT NULL,                  -- ISO8601 UTC
+    completed_at TEXT
+);
+CREATE INDEX idx_stock_counts_count_number ON stock_counts(count_number);
+CREATE INDEX idx_stock_counts_status ON stock_counts(status);
+```
+
+### 2.4 `stock_count_items`
+Individual line item physical counts and discrepancy variances.
+```sql
+CREATE TABLE stock_count_items (
+    id TEXT PRIMARY KEY,                       -- e.g. 'sci_...'
+    count_id TEXT NOT NULL REFERENCES stock_counts(id) ON DELETE CASCADE,
+    item_id TEXT NOT NULL REFERENCES inventory_items(id),
+    expected_quantity INTEGER NOT NULL,
+    counted_quantity INTEGER NOT NULL,
+    variance INTEGER NOT NULL                  -- counted - expected
+);
+CREATE INDEX idx_stock_count_items_count_id ON stock_count_items(count_id);
+CREATE INDEX idx_stock_count_items_item_id ON stock_count_items(item_id);
+```
+
 ---
 
 ## 3. MULTI-WALLET FINANCIAL LEDGER
@@ -164,6 +196,54 @@ CREATE TABLE customers (
     updated_at TEXT NOT NULL
 );
 CREATE INDEX idx_customers_phone ON customers(phone);
+```
+
+### 4.2 `suppliers`
+Vendor profiles and accounts payable ledger.
+```sql
+CREATE TABLE suppliers (
+    id TEXT PRIMARY KEY,                       -- e.g. 'sup_...'
+    name TEXT NOT NULL,
+    phone TEXT,
+    email TEXT,
+    company TEXT,
+    balance_minor INTEGER NOT NULL DEFAULT 0,  -- Positive = business owes supplier (payable)
+    created_at TEXT NOT NULL,                  -- ISO8601 UTC
+    updated_at TEXT NOT NULL
+);
+CREATE INDEX idx_suppliers_name ON suppliers(name);
+```
+
+### 4.3 `purchase_orders`
+Procurement restock orders.
+```sql
+CREATE TABLE purchase_orders (
+    id TEXT PRIMARY KEY,                       -- e.g. 'po_...'
+    po_number TEXT UNIQUE NOT NULL,            -- e.g. 'PO-20260912-001'
+    supplier_id TEXT NOT NULL REFERENCES suppliers(id),
+    total_minor INTEGER NOT NULL CHECK(total_minor >= 0),
+    paid_minor INTEGER NOT NULL DEFAULT 0 CHECK(paid_minor >= 0),
+    status TEXT NOT NULL CHECK(status IN ('DRAFT', 'ORDERED', 'RECEIVED', 'CANCELLED')),
+    actor_id TEXT NOT NULL REFERENCES users(id),
+    device_id TEXT NOT NULL REFERENCES devices(id),
+    created_at TEXT NOT NULL                   -- ISO8601 UTC
+);
+CREATE INDEX idx_purchase_orders_po_number ON purchase_orders(po_number);
+CREATE INDEX idx_purchase_orders_supplier_id ON purchase_orders(supplier_id);
+```
+
+### 4.4 `purchase_order_items`
+Line items received against a purchase order.
+```sql
+CREATE TABLE purchase_order_items (
+    id TEXT PRIMARY KEY,                       -- e.g. 'poi_...'
+    po_id TEXT NOT NULL REFERENCES purchase_orders(id) ON DELETE CASCADE,
+    item_id TEXT NOT NULL REFERENCES inventory_items(id),
+    quantity INTEGER NOT NULL CHECK(quantity > 0),
+    unit_cost_minor INTEGER NOT NULL CHECK(unit_cost_minor >= 0)
+);
+CREATE INDEX idx_po_items_po_id ON purchase_order_items(po_id);
+CREATE INDEX idx_po_items_item_id ON purchase_order_items(item_id);
 ```
 
 ---
@@ -376,9 +456,10 @@ CREATE INDEX idx_storage_files_category ON storage_files(category);
 ---
 
 ## 9. MASTER SCHEMA VERSION TRACKING
-- Current Schema Version: `4` (`PRAGMA user_version = 4;`).
+- Current Schema Version: `5` (`PRAGMA user_version = 5;`).
 - Migrations History:
   - `v1`: Core ecosystem, devices, users, inventory, wallets, customers, sales, sync, audit.
   - `v2`: Storage content deduplication catalog (`storage_files`).
   - `v3`: Event sync metadata columns on `sync_outbox`, `sync_conflicts` table, and dispatch indexes.
   - `v4`: Domain template attributes (`attributes_json`), split payment allocations (`sale_payments`), and returns engine (`returns`, `return_items`, `return_payments`).
+  - `v5`: Suppliers directory, purchase orders, purchase order items, and physical stock count audit sessions (`stock_counts`, `stock_count_items`).
