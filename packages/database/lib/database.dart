@@ -12,6 +12,7 @@ export 'src/schema/schema_v4.dart';
 export 'src/schema/schema_v5.dart';
 export 'src/schema/schema_v6.dart';
 export 'src/schema/schema_v7.dart';
+export 'src/schema/schema_v8.dart';
 export 'src/repositories/inventory_repository.dart';
 export 'src/repositories/wallet_repository.dart';
 export 'src/repositories/sales_repository.dart';

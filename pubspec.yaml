@@ -27,6 +27,8 @@ dependencies:
     path: packages/pos
   cctv:
     path: packages/cctv
+  backup:
+    path: packages/backup
   sqlite3: ^2.9.4
   crypto: ^3.0.3
 

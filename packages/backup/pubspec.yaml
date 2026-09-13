@@ -1,0 +1,24 @@
+name: backup
+description: Backup Archive (.ZYNB), Pre-Restore Snapshots, Disaster Recovery, and Projection Rebuilding for Zaynahs Ecosystem.
+version: 1.0.0
+publish_to: 'none'
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  core:
+    path: ../core
+  crypto: ^3.0.3
+  database:
+    path: ../database
+  storage:
+    path: ../storage
+  auth:
+    path: ../auth
+  pos:
+    path: ../pos
+  sqlite3: ^2.9.4
+
+dev_dependencies:
+  test: ^1.24.0

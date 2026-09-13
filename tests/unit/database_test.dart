@@ -57,18 +57,19 @@ void main() {
     );
   }
 
-  test('Database engine initializes schema v7 and sets user_version', () {
+  test('Database engine initializes schema v8 and sets user_version', () {
     final db = createTestDb();
-    expect(db.getSchemaVersion(), 7);
+    expect(db.getSchemaVersion(), 8);
 
-    // Verify all 27 core tables exist
+    // Verify all 28 core tables exist
     final tables = [
       'ecosystems', 'devices', 'users', 'inventory_items', 'inventory_movements',
       'wallets', 'wallet_transactions', 'customers', 'sales', 'sale_items',
       'sync_outbox', 'sync_cursors', 'audit_logs', 'storage_files', 'sync_conflicts',
       'sale_payments', 'returns', 'return_items', 'return_payments',
       'suppliers', 'purchase_orders', 'purchase_order_items', 'stock_counts', 'stock_count_items',
-      'register_shifts', 'cctv_cameras', 'cctv_segments', 'cctv_events'
+      'register_shifts', 'cctv_cameras', 'cctv_segments', 'cctv_events',
+      'backup_records'
     ];
 
     for (final table in tables) {
@@ -99,7 +100,7 @@ void main() {
     db.close();
   });
 
-  test('Schema migration from v1 to v7 preserves data and upgrades user_version', () {
+  test('Schema migration from v1 to v8 preserves data and upgrades user_version', () {
     // 1. Manually create a v1 database
     final conn = DatabaseConnection.openInMemory();
     for (final sql in SchemaV1.ddlStatements) {
@@ -110,19 +111,19 @@ void main() {
       "INSERT INTO ecosystems (id, name, created_at, updated_at) VALUES ('eco_v1', 'Ecosystem V1', '2026-09-12T00:00:00Z', '2026-09-12T00:00:00Z');",
     );
 
-    // 2. Open with AppDatabase and trigger sequential migration to v7
+    // 2. Open with AppDatabase and trigger sequential migration to v8
     final db = AppDatabase(conn);
     expect(db.getSchemaVersion(), 1);
     db.initialize();
 
-    // 3. Verify upgraded to version 7
-    expect(db.getSchemaVersion(), 7);
+    // 3. Verify upgraded to version 8
+    expect(db.getSchemaVersion(), 8);
 
     // 4. Verify existing v1 data preserved
     final ecoRs = db.connection.select("SELECT name FROM ecosystems WHERE id = 'eco_v1';");
     expect(ecoRs.first['name'], 'Ecosystem V1');
 
-    // 5. Verify new tables from v2, v3, v4, v5, v6, v7 exist
+    // 5. Verify new tables from v2, v3, v4, v5, v6, v7, v8 exist
     final sfRs = db.connection.select("SELECT name FROM sqlite_master WHERE type='table' AND name = 'storage_files';");
     expect(sfRs.length, 1);
     final scRs = db.connection.select("SELECT name FROM sqlite_master WHERE type='table' AND name = 'sync_conflicts';");
@@ -145,6 +146,8 @@ void main() {
     expect(segRs.length, 1);
     final evtRs = db.connection.select("SELECT name FROM sqlite_master WHERE type='table' AND name = 'cctv_events';");
     expect(evtRs.length, 1);
+    final bakRs = db.connection.select("SELECT name FROM sqlite_master WHERE type='table' AND name = 'backup_records';");
+    expect(bakRs.length, 1);
 
     db.close();
   });

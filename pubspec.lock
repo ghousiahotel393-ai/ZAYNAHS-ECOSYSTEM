@@ -40,6 +40,13 @@ packages:
       relative: true
     source: path
     version: "1.0.0"
+  backup:
+    dependency: "direct main"
+    description:
+      path: "packages/backup"
+      relative: true
+    source: path
+    version: "1.0.0"
   boolean_selector:
     dependency: transitive
     description:

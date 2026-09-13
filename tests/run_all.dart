@@ -13,12 +13,13 @@ import 'unit/pos_test.dart' as pos_test;
 import 'unit/advanced_pos_test.dart' as advanced_pos_test;
 import 'unit/reporting_test.dart' as reporting_test;
 import 'unit/cctv_test.dart' as cctv_test;
+import 'unit/backup_test.dart' as backup_test;
 
 Future<void> main() async {
   // ignore: avoid_print
   print('====================================================');
   // ignore: avoid_print
-  print('  ZAYNAHS ECOSYSTEM — MASTER TEST SUITE (PHASES 01-11)');
+  print('  ZAYNAHS ECOSYSTEM — MASTER TEST SUITE (PHASES 01-12)');
   // ignore: avoid_print
   print('====================================================');
 
@@ -37,11 +38,12 @@ Future<void> main() async {
     advanced_pos_test.main();
     await reporting_test.main();
     await cctv_test.main();
+    await backup_test.main();
 
     // ignore: avoid_print
     print('\n====================================================');
     // ignore: avoid_print
-    print('  ✓ ALL PHASES 01, 02, 03, 04, 05, 06, 07, 08, 09, 10 & 11 TESTS PASSED SUCCESSFULLY');
+    print('  ✓ ALL PHASES 01-12 TESTS PASSED SUCCESSFULLY (INCL GOLDEN 100, 101, 102, 104, 105)');
     // ignore: avoid_print
     print('====================================================');
     exit(0);

@@ -1,5 +1,5 @@
 # ZAYNAHS ECOSYSTEM — MASTER DATABASE SCHEMA
-# Canonical Schema Definition & Data Dictionary (Version 7.0)
+# Canonical Schema Definition & Data Dictionary (Version 8.0)
 
 > **Architectural Law & Invariants**  
 > 1. **ONE Ecosystem — ZERO Branches**: strictly NO `branch_id`, `branches`, or `branch_manager`.  
@@ -544,8 +544,32 @@ CREATE INDEX idx_cctv_events_event_type ON cctv_events(event_type);
 
 ---
 
-## 11. MASTER SCHEMA VERSION TRACKING
-- Current Schema Version: `7` (`PRAGMA user_version = 7;`).
+## 11. BACKUP ARCHIVES & DISASTER RECOVERY
+
+### 11.1 `backup_records`
+Catalog of local and cloud `.zynb` backup archive snapshots.
+```sql
+CREATE TABLE backup_records (
+    id TEXT PRIMARY KEY,                       -- e.g. 'bak_...'
+    backup_type TEXT NOT NULL CHECK(backup_type IN ('DAILY', 'MANUAL', 'PRE_RESTORE')),
+    file_path TEXT NOT NULL,                   -- Relative disk path (e.g. 'backups/daily/...')
+    file_size_bytes INTEGER NOT NULL,          -- Archive file size in bytes
+    sha256_checksum TEXT NOT NULL,             -- SHA-256 integrity hash of .zynb archive
+    manifest_json TEXT NOT NULL,               -- Archive manifest, table record counts, device info
+    status TEXT NOT NULL CHECK(status IN ('COMPLETED', 'CORRUPTED', 'RESTORED')),
+    actor_id TEXT NOT NULL REFERENCES users(id),
+    device_id TEXT NOT NULL REFERENCES devices(id),
+    created_at TEXT NOT NULL                   -- ISO8601 UTC
+);
+CREATE INDEX idx_backup_records_type ON backup_records(backup_type);
+CREATE INDEX idx_backup_records_status ON backup_records(status);
+CREATE INDEX idx_backup_records_created_at ON backup_records(created_at);
+```
+
+---
+
+## 12. MASTER SCHEMA VERSION TRACKING
+- Current Schema Version: `8` (`PRAGMA user_version = 8;`).
 - Migrations History:
   - `v1`: Core ecosystem, devices, users, inventory, wallets, customers, sales, sync, audit.
   - `v2`: Storage content deduplication catalog (`storage_files`).
@@ -554,3 +578,4 @@ CREATE INDEX idx_cctv_events_event_type ON cctv_events(event_type);
   - `v5`: Suppliers directory, purchase orders, purchase order items, and physical stock count audit sessions (`stock_counts`, `stock_count_items`).
   - `v6`: Cash register shift closeouts and Z-reports (`register_shifts`).
   - `v7`: CCTV cameras registry, continuous segmented recording (`cctv_segments`), and lifecycle/detection events (`cctv_events`).
+  - `v8`: Backup archive records catalog (`backup_records`) and restore state tracking.
