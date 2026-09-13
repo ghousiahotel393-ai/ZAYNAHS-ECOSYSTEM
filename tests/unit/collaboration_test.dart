@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:crypto/crypto.dart';
@@ -11,19 +10,6 @@ Future<void> main() async {
   void test(String name, void Function() body) {
     try {
       body();
-      passed++;
-      // ignore: avoid_print
-      print('  ✓ $name');
-    } catch (e, st) {
-      failed++;
-      // ignore: avoid_print
-      print('  ✗ $name: $e\n$st');
-    }
-  }
-
-  Future<void> testAsync(String name, Future<void> Function() body) async {
-    try {
-      await body();
       passed++;
       // ignore: avoid_print
       print('  ✓ $name');

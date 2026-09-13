@@ -16,7 +16,7 @@ class SyncOutboxQueue {
   void enqueue(SyncEvent event) {
     db.connection.execute(
       '''
-      INSERT INTO sync_outbox (
+      INSERT OR IGNORE INTO sync_outbox (
         id, event_type, entity_table, entity_id, payload_json,
         device_id, status, retry_count, created_at, user_id,
         logical_version, hash, signature

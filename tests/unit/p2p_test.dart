@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:auth/auth.dart';
-import 'package:core/core.dart';
 import 'package:database/database.dart';
 import 'package:network/network.dart';
 

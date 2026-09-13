@@ -24,12 +24,6 @@ void main() {
     }
   }
 
-  void assertTrue(bool condition, [String? message]) {
-    if (!condition) {
-      throw AssertionError(message ?? 'Expected condition to be true');
-    }
-  }
-
   // ignore: avoid_print
   print('\n=== Running Router & Deep Link Sanitization Tests ===');
 

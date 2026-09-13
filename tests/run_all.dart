@@ -16,12 +16,13 @@ import 'unit/cctv_test.dart' as cctv_test;
 import 'unit/backup_test.dart' as backup_test;
 import 'unit/security_hardening_test.dart' as security_hardening_test;
 import 'unit/cross_platform_test.dart' as cross_platform_test;
+import 'unit/production_soak_test.dart' as production_soak_test;
 
 Future<void> main() async {
   // ignore: avoid_print
   print('====================================================');
   // ignore: avoid_print
-  print('  ZAYNAHS ECOSYSTEM — MASTER TEST SUITE (PHASES 01-14)');
+  print('  ZAYNAHS ECOSYSTEM — MASTER TEST SUITE (PHASES 01-15)');
   // ignore: avoid_print
   print('====================================================');
 
@@ -43,11 +44,12 @@ Future<void> main() async {
     await backup_test.main();
     security_hardening_test.main();
     cross_platform_test.main();
+    await production_soak_test.main();
 
     // ignore: avoid_print
     print('\n====================================================');
     // ignore: avoid_print
-    print('  ✓ ALL PHASES 01-14 TESTS PASSED SUCCESSFULLY (INCL GOLDEN 100, 101, 102, 103, 104, 105)');
+    print('  ✓ ALL PHASES 01-15 TESTS PASSED SUCCESSFULLY (INCL GOLDEN 100, 101, 102, 103, 104, 105 & SOAK)');
     // ignore: avoid_print
     print('====================================================');
     exit(0);

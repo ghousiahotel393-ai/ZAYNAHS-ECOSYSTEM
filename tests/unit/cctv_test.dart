@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:cctv/cctv.dart';
-import 'package:core/core.dart';
 import 'package:crypto/crypto.dart';
 import 'package:database/database.dart';
 import 'package:storage/storage.dart';
@@ -8,19 +7,6 @@ import 'package:storage/storage.dart';
 Future<void> main() async {
   int passed = 0;
   int failed = 0;
-
-  void test(String name, void Function() body) {
-    try {
-      body();
-      passed++;
-      // ignore: avoid_print
-      print('  ✓ $name');
-    } catch (e, st) {
-      failed++;
-      // ignore: avoid_print
-      print('  ✗ $name: $e\n$st');
-    }
-  }
 
   Future<void> testAsync(String name, Future<void> Function() body) async {
     try {
