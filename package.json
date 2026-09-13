@@ -4,6 +4,8 @@
   "description": "Zaynahs Ecosystem — Local POS, Inventory Ledger, Wallets & Surveillance Console",
   "scripts": {
     "dev": "dart apps/ecosystem_app/bin/main.dart",
+    "flutter:web": "cd apps/ecosystem_app && flutter run -d chrome",
+    "flutter:macos": "cd apps/ecosystem_app && flutter run -d macos",
     "start": "dart apps/ecosystem_app/bin/main.dart",
     "test": "dart tests/run_all.dart",
     "verify": "./scripts/verify_phase_15.sh",

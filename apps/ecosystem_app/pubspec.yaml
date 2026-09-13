@@ -1,0 +1,43 @@
+name: ecosystem_app
+description: "Production-grade Zaynahs Ecosystem — Flutter Desktop, Web & Mobile Application."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+  flutter: ">=3.10.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.6
+  core:
+    path: ../../packages/core
+  ui:
+    path: ../../packages/ui
+  database:
+    path: ../../packages/database
+  auth:
+    path: ../../packages/auth
+  storage:
+    path: ../../packages/storage
+  sync:
+    path: ../../packages/sync
+  network:
+    path: ../../packages/network
+  collaboration:
+    path: ../../packages/collaboration
+  pos:
+    path: ../../packages/pos
+  cctv:
+    path: ../../packages/cctv
+  backup:
+    path: ../../packages/backup
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
