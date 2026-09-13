@@ -15,3 +15,8 @@ dist/
 temp/
 *.log
 .dart_tool/
+data/
+*.db
+*.db-shm
+*.db-wal
+*.zynb
