@@ -57,15 +57,15 @@ void main() {
     );
   }
 
-  test('Database engine initializes schema v2 and sets user_version', () {
+  test('Database engine initializes schema v3 and sets user_version', () {
     final db = createTestDb();
-    expect(db.getSchemaVersion(), 2);
+    expect(db.getSchemaVersion(), 3);
 
-    // Verify all 13 core tables exist
+    // Verify all 14 core tables exist
     final tables = [
       'ecosystems', 'devices', 'users', 'inventory_items', 'inventory_movements',
       'wallets', 'wallet_transactions', 'customers', 'sales', 'sale_items',
-      'sync_outbox', 'sync_cursors', 'audit_logs', 'storage_files'
+      'sync_outbox', 'sync_cursors', 'audit_logs', 'storage_files', 'sync_conflicts'
     ];
 
     for (final table in tables) {
@@ -75,10 +75,19 @@ void main() {
       );
       expect(rs.length, 1);
     }
+
+    // Verify sync_outbox has new v3 columns
+    final cols = db.connection.select("PRAGMA table_info(sync_outbox);");
+    final colNames = cols.map((r) => r['name'] as String).toSet();
+    assertTrue(colNames.contains('user_id'));
+    assertTrue(colNames.contains('logical_version'));
+    assertTrue(colNames.contains('hash'));
+    assertTrue(colNames.contains('signature'));
+
     db.close();
   });
 
-  test('Schema migration from v1 to v2 preserves data and upgrades user_version', () {
+  test('Schema migration from v1 to v3 preserves data and upgrades user_version', () {
     // 1. Manually create a v1 database
     final conn = DatabaseConnection.openInMemory();
     for (final sql in SchemaV1.ddlStatements) {
@@ -89,21 +98,23 @@ void main() {
       "INSERT INTO ecosystems (id, name, created_at, updated_at) VALUES ('eco_v1', 'Ecosystem V1', '2026-09-12T00:00:00Z', '2026-09-12T00:00:00Z');",
     );
 
-    // 2. Open with AppDatabase and trigger migration
+    // 2. Open with AppDatabase and trigger sequential migration to v3
     final db = AppDatabase(conn);
     expect(db.getSchemaVersion(), 1);
     db.initialize();
 
-    // 3. Verify upgraded to version 2
-    expect(db.getSchemaVersion(), 2);
+    // 3. Verify upgraded to version 3
+    expect(db.getSchemaVersion(), 3);
 
     // 4. Verify existing v1 data preserved
     final ecoRs = db.connection.select("SELECT name FROM ecosystems WHERE id = 'eco_v1';");
     expect(ecoRs.first['name'], 'Ecosystem V1');
 
-    // 5. Verify new v2 storage_files table exists and is writable
+    // 5. Verify new v2 storage_files and v3 sync_conflicts tables exist
     final sfRs = db.connection.select("SELECT name FROM sqlite_master WHERE type='table' AND name = 'storage_files';");
     expect(sfRs.length, 1);
+    final scRs = db.connection.select("SELECT name FROM sqlite_master WHERE type='table' AND name = 'sync_conflicts';");
+    expect(scRs.length, 1);
 
     db.close();
   });

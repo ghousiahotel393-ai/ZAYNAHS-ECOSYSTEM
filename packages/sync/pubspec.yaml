@@ -1,0 +1,19 @@
+name: sync
+description: Event-driven synchronization engine, durable SQLite outbox, vector cursors, and conflict preservation (NO Last-Write-Wins).
+version: 0.1.0
+publish_to: none
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  core:
+    path: ../core
+  database:
+    path: ../database
+  auth:
+    path: ../auth
+  crypto: ^3.0.3
+
+dev_dependencies:
+  lints: ^3.0.0

@@ -6,12 +6,13 @@ import 'package:sqlite3/sqlite3.dart';
 import 'database_connection.dart';
 import 'schema/schema_v1.dart';
 import 'schema/schema_v2.dart';
+import 'schema/schema_v3.dart';
 
 class AppDatabase {
   final DatabaseConnection connection;
   bool _initialized = false;
 
-  static const int currentSchemaVersion = SchemaV2.version;
+  static const int currentSchemaVersion = SchemaV3.version;
 
   AppDatabase(this.connection);
 
@@ -54,6 +55,9 @@ class AppDatabase {
       for (final sql in SchemaV2.migrationStatements) {
         connection.execute(sql);
       }
+      for (final sql in SchemaV3.ddlStatements) {
+        connection.execute(sql);
+      }
       connection.execute('PRAGMA user_version = $currentSchemaVersion;');
     });
   }
@@ -65,6 +69,12 @@ class AppDatabase {
           connection.execute(sql);
         }
         connection.execute('PRAGMA user_version = 2;');
+      }
+      if (fromVersion < 3 && toVersion >= 3) {
+        for (final sql in SchemaV3.ddlStatements) {
+          connection.execute(sql);
+        }
+        connection.execute('PRAGMA user_version = 3;');
       }
     });
   }

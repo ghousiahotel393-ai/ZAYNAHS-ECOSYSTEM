@@ -1,5 +1,5 @@
 # ZAYNAHS ECOSYSTEM — MASTER DATABASE SCHEMA
-# Canonical Schema Definition & Data Dictionary (Version 2.0)
+# Canonical Schema Definition & Data Dictionary (Version 3.0)
 
 > **Architectural Law & Invariants**  
 > 1. **ONE Ecosystem — ZERO Branches**: strictly NO `branch_id`, `branches`, or `branch_manager`.  
@@ -225,10 +225,15 @@ CREATE TABLE sync_outbox (
     device_id TEXT NOT NULL REFERENCES devices(id),
     status TEXT NOT NULL DEFAULT 'PENDING' CHECK(status IN ('PENDING', 'SENT', 'ACKNOWLEDGED', 'FAILED')),
     retry_count INTEGER NOT NULL DEFAULT 0,
-    created_at TEXT NOT NULL
+    created_at TEXT NOT NULL,
+    user_id TEXT REFERENCES users(id),
+    logical_version INTEGER NOT NULL DEFAULT 1,
+    hash TEXT,                                 -- SHA-256 integrity hash
+    signature TEXT                             -- Ed25519 device signature
 );
 CREATE INDEX idx_sync_outbox_status ON sync_outbox(status);
 CREATE INDEX idx_sync_outbox_created_at ON sync_outbox(created_at);
+CREATE INDEX idx_sync_outbox_device_status ON sync_outbox(device_id, status);
 ```
 
 ### 6.2 `sync_cursors`
@@ -240,6 +245,24 @@ CREATE TABLE sync_cursors (
     last_acked_event_id TEXT,
     last_sync_timestamp TEXT NOT NULL
 );
+```
+
+### 6.3 `sync_conflicts`
+Transparent conflict preservation log (Strict NO Last-Write-Wins rule). Exposes conflicting concurrent modifications for domain resolution without data loss.
+```sql
+CREATE TABLE sync_conflicts (
+    id TEXT PRIMARY KEY,                       -- e.g. 'cnf_...'
+    entity_table TEXT NOT NULL,
+    entity_id TEXT NOT NULL,
+    local_event_id TEXT REFERENCES sync_outbox(id),
+    remote_event_id TEXT NOT NULL,
+    conflict_type TEXT NOT NULL,
+    conflict_data_json TEXT NOT NULL,
+    status TEXT NOT NULL DEFAULT 'UNRESOLVED' CHECK(status IN ('UNRESOLVED', 'RESOLVED', 'IGNORED')),
+    created_at TEXT NOT NULL
+);
+CREATE INDEX idx_sync_conflicts_status ON sync_conflicts(status);
+CREATE INDEX idx_sync_conflicts_entity ON sync_conflicts(entity_table, entity_id);
 ```
 
 ---
