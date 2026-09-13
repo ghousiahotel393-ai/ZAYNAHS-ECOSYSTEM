@@ -1,5 +1,5 @@
 # ZAYNAHS ECOSYSTEM — MASTER DATABASE SCHEMA
-# Canonical Schema Definition & Data Dictionary (Version 3.0)
+# Canonical Schema Definition & Data Dictionary (Version 7.0)
 
 > **Architectural Law & Invariants**  
 > 1. **ONE Ecosystem — ZERO Branches**: strictly NO `branch_id`, `branches`, or `branch_manager`.  
@@ -482,8 +482,70 @@ CREATE INDEX idx_register_shifts_status ON register_shifts(status);
 
 ---
 
-## 10. MASTER SCHEMA VERSION TRACKING
-- Current Schema Version: `6` (`PRAGMA user_version = 6;`).
+## 10. CCTV MONITORING & RECORDING
+
+### 10.1 `cctv_cameras`
+CCTV camera hardware and stream source registry.
+```sql
+CREATE TABLE cctv_cameras (
+    id TEXT PRIMARY KEY,                       -- e.g. 'cam_...'
+    name TEXT NOT NULL,                        -- 'Front Counter Cam', 'Warehouse North'
+    source_type TEXT NOT NULL,                 -- 'USB', 'RTSP', 'IP', 'RELAY'
+    source_url TEXT NOT NULL,                  -- RTSP URI or device path (e.g. '/dev/video0')
+    resolution TEXT NOT NULL,                  -- '1920x1080', '1280x720'
+    fps INTEGER NOT NULL,                      -- Frames per second (e.g. 15, 25, 30)
+    is_recording INTEGER NOT NULL DEFAULT 0,   -- 1 = actively recording, 0 = idle
+    device_id TEXT NOT NULL REFERENCES devices(id),
+    created_at TEXT NOT NULL,                  -- ISO8601 UTC
+    updated_at TEXT NOT NULL
+);
+CREATE INDEX idx_cctv_cameras_device_id ON cctv_cameras(device_id);
+```
+
+### 10.2 `cctv_segments`
+Continuous 1–5 minute media segments stored on local disk.
+```sql
+CREATE TABLE cctv_segments (
+    id TEXT PRIMARY KEY,                       -- e.g. 'seg_...'
+    camera_id TEXT NOT NULL REFERENCES cctv_cameras(id) ON DELETE CASCADE,
+    file_path TEXT NOT NULL,                   -- Relative disk path (e.g. 'cctv/recordings/YYYY/MM/DD/...')
+    file_size_bytes INTEGER NOT NULL,          -- Segment size in bytes
+    sha256_checksum TEXT NOT NULL,             -- SHA-256 integrity digest
+    duration_seconds REAL NOT NULL,            -- Segment duration in seconds
+    start_time TEXT NOT NULL,                  -- ISO8601 UTC segment start
+    end_time TEXT NOT NULL,                    -- ISO8601 UTC segment end
+    is_protected INTEGER NOT NULL DEFAULT 0,   -- 1 = Bookmarked/protected from retention purge
+    is_corrupted INTEGER NOT NULL DEFAULT 0,   -- 1 = Corrupted / unplayable
+    created_at TEXT NOT NULL                   -- ISO8601 UTC
+);
+CREATE INDEX idx_cctv_segments_camera_id ON cctv_segments(camera_id);
+CREATE INDEX idx_cctv_segments_start_time ON cctv_segments(start_time);
+CREATE INDEX idx_cctv_segments_end_time ON cctv_segments(end_time);
+CREATE INDEX idx_cctv_segments_is_protected ON cctv_segments(is_protected);
+```
+
+### 10.3 `cctv_events`
+Detection and lifecycle events associated with video feeds.
+```sql
+CREATE TABLE cctv_events (
+    id TEXT PRIMARY KEY,                       -- e.g. 'evt_...'
+    camera_id TEXT NOT NULL REFERENCES cctv_cameras(id) ON DELETE CASCADE,
+    segment_id TEXT REFERENCES cctv_segments(id) ON DELETE SET NULL,
+    event_type TEXT NOT NULL,                  -- 'MOTION', 'PERSON', 'VEHICLE', 'DISCONNECT', 'RECONNECT'
+    timestamp TEXT NOT NULL,                   -- ISO8601 UTC
+    confidence REAL NOT NULL,                  -- Detection score 0.0 to 1.0
+    metadata_json TEXT NOT NULL,               -- Bounding boxes, alert metadata
+    created_at TEXT NOT NULL                   -- ISO8601 UTC
+);
+CREATE INDEX idx_cctv_events_camera_id ON cctv_events(camera_id);
+CREATE INDEX idx_cctv_events_timestamp ON cctv_events(timestamp);
+CREATE INDEX idx_cctv_events_event_type ON cctv_events(event_type);
+```
+
+---
+
+## 11. MASTER SCHEMA VERSION TRACKING
+- Current Schema Version: `7` (`PRAGMA user_version = 7;`).
 - Migrations History:
   - `v1`: Core ecosystem, devices, users, inventory, wallets, customers, sales, sync, audit.
   - `v2`: Storage content deduplication catalog (`storage_files`).
@@ -491,3 +553,4 @@ CREATE INDEX idx_register_shifts_status ON register_shifts(status);
   - `v4`: Domain template attributes (`attributes_json`), split payment allocations (`sale_payments`), and returns engine (`returns`, `return_items`, `return_payments`).
   - `v5`: Suppliers directory, purchase orders, purchase order items, and physical stock count audit sessions (`stock_counts`, `stock_count_items`).
   - `v6`: Cash register shift closeouts and Z-reports (`register_shifts`).
+  - `v7`: CCTV cameras registry, continuous segmented recording (`cctv_segments`), and lifecycle/detection events (`cctv_events`).

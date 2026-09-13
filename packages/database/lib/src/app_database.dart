@@ -10,12 +10,13 @@ import 'schema/schema_v3.dart';
 import 'schema/schema_v4.dart';
 import 'schema/schema_v5.dart';
 import 'schema/schema_v6.dart';
+import 'schema/schema_v7.dart';
 
 class AppDatabase {
   final DatabaseConnection connection;
   bool _initialized = false;
 
-  static const int currentSchemaVersion = SchemaV6.version;
+  static const int currentSchemaVersion = SchemaV7.version;
 
   AppDatabase(this.connection);
 
@@ -70,6 +71,9 @@ class AppDatabase {
       for (final sql in SchemaV6.ddlStatements) {
         connection.execute(sql);
       }
+      for (final sql in SchemaV7.ddlStatements) {
+        connection.execute(sql);
+      }
       connection.execute('PRAGMA user_version = $currentSchemaVersion;');
     });
   }
@@ -105,6 +109,12 @@ class AppDatabase {
           connection.execute(sql);
         }
         connection.execute('PRAGMA user_version = 6;');
+      }
+      if (fromVersion < 7 && toVersion >= 7) {
+        for (final sql in SchemaV7.ddlStatements) {
+          connection.execute(sql);
+        }
+        connection.execute('PRAGMA user_version = 7;');
       }
     });
   }

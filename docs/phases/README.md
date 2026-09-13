@@ -20,7 +20,7 @@
 | **08** | [**PHASE-08-pos-core/**](PHASE-08-pos-core/) | 7 files | **ONE POS Engine**, immutable inventory ledger, multi-wallet accounts, Golden Test 100 — ✅ COMPLETED |
 | **09** | [**PHASE-09-pos-advanced/**](PHASE-09-pos-advanced/) | 5 files | Discounts, taxes, barcode/QR engine, ESC/POS & PDF printing, procurement, stock counts — ✅ COMPLETED |
 | **10** | [**PHASE-10-reports/**](PHASE-10-reports/) | 4 files | Authoritative reporting engine, P&L, register shift closeouts, streaming exports — ✅ COMPLETED |
-| **11** | [**PHASE-11-cctv/**](PHASE-11-cctv/) | 5 files | USB/IP/RTSP cameras, segmented recording (1-5m), timeline playback, Golden Test 105 |
+| **11** | [**PHASE-11-cctv/**](PHASE-11-cctv/) | 5 files | USB/IP/RTSP cameras, segmented recording (1-5m), timeline playback, Golden Test 105 — ✅ COMPLETED |
 | **12** | [**PHASE-12-backup-restore/**](PHASE-12-backup-restore/) | 5 files | Verifiable `.zynb` archives, pre-restore backup, projection rebuilds, Golden Test 102 |
 | **13** | [**PHASE-13-hardening/**](PHASE-13-hardening/) | 4 files | Security audit, RBAC penetration, memory leak profiling, zero secrets, Golden Test 103 |
 | **14** | [**PHASE-14-cross-platform/**](PHASE-14-cross-platform/) | 3 files | Android, iOS, Windows, Web builds; responsive layout verification; platform matrix |

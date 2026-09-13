@@ -25,6 +25,8 @@ dependencies:
     path: packages/collaboration
   pos:
     path: packages/pos
+  cctv:
+    path: packages/cctv
   sqlite3: ^2.9.4
   crypto: ^3.0.3
 
