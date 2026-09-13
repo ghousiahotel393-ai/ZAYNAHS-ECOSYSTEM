@@ -62,3 +62,9 @@ class AppBreakpoints {
   static const double mobileMax = 600.0;
   static const double tabletMax = 1024.0;
 }
+
+class AppTouchTargets {
+  static const double minTargetSize = 48.0;
+  static const double minIconSize = 24.0;
+}
+
