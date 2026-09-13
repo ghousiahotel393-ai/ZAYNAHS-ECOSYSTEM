@@ -21,6 +21,8 @@ dependencies:
     path: packages/sync
   network:
     path: packages/network
+  collaboration:
+    path: packages/collaboration
   sqlite3: ^2.9.4
   crypto: ^3.0.3
 

@@ -1,0 +1,21 @@
+name: collaboration
+description: P2P encrypted chat, resumable chunked file transfer (Golden Test 104), WebRTC call coordination, and privacy sharing.
+version: 0.1.0
+publish_to: none
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  core:
+    path: ../core
+  auth:
+    path: ../auth
+  storage:
+    path: ../storage
+  network:
+    path: ../network
+  crypto: ^3.0.3
+
+dev_dependencies:
+  lints: ^3.0.0

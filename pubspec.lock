@@ -56,6 +56,13 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.2.0"
+  collaboration:
+    dependency: "direct main"
+    description:
+      path: "packages/collaboration"
+      relative: true
+    source: path
+    version: "0.1.0"
   collection:
     dependency: transitive
     description:
