@@ -58,6 +58,11 @@ The AI coding agent behaves as a **Senior Principal Software Engineer & Architec
      - **Data Preservation**: Existing user data MUST be preserved during migrations; destructive migrations require explicit user authorization.
      - **Reproducibility**: A fresh clone/installation MUST be able to execute migrations from version 1 to N and recreate the exact active database schema.
    - **Stop Condition**: If `MASTER_SCHEMA.md` and the actual database differ by even a single column, constraint, or index, STOP treating the task/phase as complete and reconcile them immediately.
+6. **CODE MODULARITY & FILE SIZE LAW (RULE 20 — 200–400 LINES)**:
+   - **Target File Size**: Normal source files MUST generally remain strictly within **200–400 lines**.
+   - **Mandatory Splitting**: When a source file exceeds 400 lines, the engineer MUST immediately inspect its responsibilities and split it logically into cohesive, single-responsibility files (e.g. separating entity models, domain handlers, UI templates/views, and storage adapters).
+   - **Pure Line-Count Splitting Forbidden**: Do NOT arbitrarily chop files by raw line numbers; splits must follow strict architectural boundaries (Single Responsibility Principle).
+   - **Exemptions**: Generated code, raw database migration scripts (`schema_vN.dart`), comprehensive schema definitions (`MASTER_SCHEMA.md`), and end-to-end multi-scenario integration/soak test batteries may exceed 400 lines where splitting would harm transaction cohesion.
 
 ---
 
