@@ -19,6 +19,8 @@ dependencies:
     path: packages/storage
   sync:
     path: packages/sync
+  network:
+    path: packages/network
   sqlite3: ^2.9.4
   crypto: ^3.0.3
 

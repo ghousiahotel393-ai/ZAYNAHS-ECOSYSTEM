@@ -7,12 +7,13 @@ import 'unit/database_test.dart' as database_test;
 import 'unit/auth_test.dart' as auth_test;
 import 'unit/storage_test.dart' as storage_test;
 import 'unit/sync_test.dart' as sync_test;
+import 'unit/p2p_test.dart' as p2p_test;
 
 Future<void> main() async {
   // ignore: avoid_print
   print('====================================================');
   // ignore: avoid_print
-  print('  ZAYNAHS ECOSYSTEM — MASTER TEST SUITE (PHASES 01-05)');
+  print('  ZAYNAHS ECOSYSTEM — MASTER TEST SUITE (PHASES 01-06)');
   // ignore: avoid_print
   print('====================================================');
 
@@ -25,11 +26,12 @@ Future<void> main() async {
     auth_test.main();
     await storage_test.main();
     await sync_test.main();
+    await p2p_test.main();
 
     // ignore: avoid_print
     print('\n====================================================');
     // ignore: avoid_print
-    print('  ✓ ALL PHASES 01, 02, 03, 04 & 05 TESTS PASSED SUCCESSFULLY');
+    print('  ✓ ALL PHASES 01, 02, 03, 04, 05 & 06 TESTS PASSED SUCCESSFULLY');
     // ignore: avoid_print
     print('====================================================');
     exit(0);

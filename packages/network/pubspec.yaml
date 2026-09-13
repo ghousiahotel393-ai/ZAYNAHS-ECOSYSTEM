@@ -1,0 +1,19 @@
+name: network
+description: P2P & WebRTC networking foundation, LAN discovery, Cloudflare signaling, and DataChannel multiplexing.
+version: 0.1.0
+publish_to: none
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  core:
+    path: ../core
+  auth:
+    path: ../auth
+  sync:
+    path: ../sync
+  crypto: ^3.0.3
+
+dev_dependencies:
+  lints: ^3.0.0
